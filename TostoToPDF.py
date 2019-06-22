@@ -16,7 +16,6 @@ def czyObrazek(line):
         return True
     else:
         return False
-
 with open('Baza.html','w', newline='', encoding='latin-1') as wynFile:
     with open('style.css','w', newline='', encoding='latin-1') as cssFile:
         css =""".nazwaPytania{font-style: italic;font-size: 0.7em;}
@@ -30,21 +29,34 @@ with open('Baza.html','w', newline='', encoding='latin-1') as wynFile:
         cssFile.write(css)
     wynFile.write('<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="latin-1"><title>Baza pytan</title><link rel="stylesheet" type="text/css" href="style.css"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>')
 
+
+
+
     for filepath in glob.iglob('baza/*.txt'):
-        with open(filepath, 'r', newline='\n', encoding='latin-1') as pytanieFile:
-            lin=0
-            wynFile.write('<div class="pytanie"><div class="nazwaPytania">'+ filepath.strip('baza/') +'</div>')
-            for line in pytanieFile:
-                dict=""
-                if line[0]=='X':
-                    dict = line[1:]
-                    answKey=[]
-                    for x in range(1,len(dict)) :
-                        if line[x] == '1':
-                            answKey.append(int(x)+1)
-                    #print(answKey)
-                else:
-                    if lin==1:
+        with open(filepath, 'r', newline='\n',encoding='latin-1') as pytanieFile:
+            try:
+                lin=0
+                wynFile.write('<div class="pytanie"><div class="nazwaPytania">'+ filepath.strip('baza/') +'</div>')
+                #print(filepath)
+
+                for line in pytanieFile:
+                    dict=""
+                    if lin==0:
+                        line = line.replace(" ","")
+                        line = line.replace("¿","")
+                        line = line.replace("»","")
+                        line = line.replace("ï","")
+
+                        dict = line[1:]
+                        answKey=[]
+                        for x in range(0,len(dict)):
+                            if line[x] == '1':
+                                #print(str(line[x] + "TAK"))
+                                answKey.append(int(x)+1)
+                            else:
+                                pass
+                                #print(str(line[x] + "NIE"))
+                    elif lin==1:
                         if czyObrazek(line):
                             wynFile.write('<div class="tresc_pytania"><img src="baza\\'+ obrazek_location(line) +'" alt="'+ obrazek_location(line) +'"></div>\n')
                         else:
@@ -60,5 +72,9 @@ with open('Baza.html','w', newline='', encoding='latin-1') as wynFile:
                                 wynFile.write('<div class="zla_odpowiedz"><img src="baza\\'+ obrazek_location(line) +'" alt="'+ obrazek_location(line) +'"></div>\n')
                             else:
                                 wynFile.write('<div class="zla_odpowiedz"><li>' + line + "</li></div>\n")
-                lin+=1
+                    lin+=1
+
+            except Exception as e:
+                raise
+
             wynFile.write('</div>')
